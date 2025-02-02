@@ -6,6 +6,8 @@ metadata:
 spec:
   releaseName: azure-workload-identity-webhook
   interval: 5m
+  targetNamespace: azure-workload-identity
+  storageNamespace: azure-workload-identity
   chart:
     spec:
       chart: workload-identity-webhook
@@ -13,6 +15,5 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: azure-workload-identity
-        namespace: azure-workload-identity
   values:
     azureTenantID: "16b3c013-d300-468d-ac64-7eda0820b6d3"
