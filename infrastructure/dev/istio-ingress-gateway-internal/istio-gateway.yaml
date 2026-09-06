@@ -1,4 +1,4 @@
-apiVersion: networking.istio.io/v1beta1
+apiVersion: networking.istio.io/v1
 kind: Gateway
 metadata:
   name: istio-ingress-gateway-internal
@@ -10,11 +10,8 @@ spec:
     istio: aks-istio-ingressgateway-internal
   servers:
     - port:
-        number: 443
-        name: https
-        protocol: HTTPS
-      tls:
-        mode: SIMPLE
-        credentialName: istio-ingress-tls
+        number: 80
+        name: http
+        protocol: HTTP
       hosts:
-        - azingress.porvenir.int
+        - demo-services.internal.cloudcompany.pe

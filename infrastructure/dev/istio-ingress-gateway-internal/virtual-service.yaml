@@ -1,0 +1,19 @@
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: demo-services-ingress
+  namespace: demo-services
+spec:
+  hosts:
+    - demo-services.internal.cloudcompany.pe
+  gateways:
+    - aks-istio-ingress/istio-ingress-gateway-internal
+  http:
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: demo-services.demo-services.svc.cluster.local
+            port:
+              number: 80
