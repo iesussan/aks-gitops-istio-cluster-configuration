@@ -7,7 +7,7 @@ appProfile: aks
 replicaCount: 2
 image:
   repository: acragenticbasedev001mjil.azurecr.io/apps/redis
-  digest: sha256:d85d020892ccbf292ed88fc8fdb83865aec9f15497821b88dac5ee2eba08635d
+  digest: sha256:722646b1ec9d5057fd867f41ac15eacd6c65b337ba3d270a5c43299bb9e1dae3
 nodeSelector:
   kubernetes.azure.com/agentpool: workload
   topology.credicorp.com/region: westus2
