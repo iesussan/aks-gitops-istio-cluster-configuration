@@ -1,0 +1,40 @@
+channel: validation
+flow: redis-multiregion
+domain: resiliency
+capability: redis
+appName: resiliency-app-redis
+appProfile: aks
+replicaCount: 2
+image:
+  repository: acragenticbasedev001mjil.azurecr.io/apps/redis
+  digest: sha256:d85d020892ccbf292ed88fc8fdb83865aec9f15497821b88dac5ee2eba08635d
+nodeSelector:
+  kubernetes.azure.com/agentpool: workload
+  topology.credicorp.com/region: westus2
+redis:
+  hostname: redis-mr-dev-westus2-001.westus2.redis.azure.net
+  port: 10000
+  tls: true
+  scope: https://redis.azure.com/.default
+  username: 650f1443-4290-4458-a858-5ebf7d37a0fe
+workloadIdentity:
+  clientId: 927df9d4-14a8-41d8-a754-5c2fe9159cae
+  principalId: 650f1443-4290-4458-a858-5ebf7d37a0fe
+  tenantId: 00dc56d8-1058-405b-bc47-03af055246cb
+  issuer: https://westus2.oic.prod-aks.azure.com/00dc56d8-1058-405b-bc47-03af055246cb/2be205ba-688e-4e00-a659-f1f04c1ed121/
+  subject: system:serviceaccount:demo-services:demo-services
+  audience: api://AzureADTokenExchange
+serviceAccount:
+  name: demo-services
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+istio:
+  gateway:
+    name: demo-services
+    namespace: demo-services
+  virtualService:
+    hosts:
+      - demo-services.internal.cloudcompany.pe
+    path: /employees
