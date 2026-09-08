@@ -7,7 +7,7 @@ appProfile: aks
 replicaCount: 2
 image:
   repository: acragenticbasedev001mjil.azurecr.io/apps/redis
-  digest: sha256:0cd0cc85a7dd6d8c2712c2030187761bfdf787191f22766fdd8abb0c1a59b233
+  digest: sha256:dd6544d1322d50fcf6c89942acbdc163ae950966e3b17bc09bebac20c1feb4ae
 nodeSelector:
   kubernetes.azure.com/agentpool: workload
   topology.credicorp.com/region: westus2
@@ -32,9 +32,10 @@ service:
   targetPort: 8080
 istio:
   gateway:
-    name: demo-services
-    namespace: demo-services
+    name: istio-ingress-gateway-internal
+    namespace: aks-istio-ingress
   virtualService:
     hosts:
       - demo-services.internal.cloudcompany.pe
-    path: /employees
+    path: /api/employees
+    readinessPath: /actuator/health/readiness
