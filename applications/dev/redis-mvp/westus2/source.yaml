@@ -8,7 +8,7 @@ spec:
   provider: azure
   url: oci://acragenticbasedev001mjil.azurecr.io/helm/resiliency-app
   ref:
-    digest: sha256:04ebd77f2801b778ab77c708f61386500b5625a808aab14a5d5fb1a41aba042d
+    digest: sha256:7f228e6d7eaa05288a8a6f70f67eb825b1a900d8d2b4f7097cca305259cf6451
   layerSelector:
     mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
     operation: copy
