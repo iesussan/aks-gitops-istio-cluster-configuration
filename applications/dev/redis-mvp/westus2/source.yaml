@@ -6,9 +6,9 @@ metadata:
 spec:
   interval: 5m
   provider: azure
-  url: oci://acragenticbasedev001mjil.azurecr.io/helm/resiliency-app
+  url: oci://acragenticbasedev001pq4u.azurecr.io/helm/resiliency-app
   ref:
-    digest: sha256:2d06919a4e1663ae1e8c1c8fb1db510068bc9bddb9ce454a2a4f32d78103ada8
+    digest: sha256:612a345efbfe7ed1a4448a2935fe60c9290b2a1d1c95be6d6fd2ac2f72e48197
   layerSelector:
     mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
     operation: copy

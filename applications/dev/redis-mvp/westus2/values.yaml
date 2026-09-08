@@ -6,8 +6,8 @@ appName: resiliency-app-redis
 appProfile: aks
 replicaCount: 2
 image:
-  repository: acragenticbasedev001mjil.azurecr.io/apps/redis
-  digest: sha256:dd6544d1322d50fcf6c89942acbdc163ae950966e3b17bc09bebac20c1feb4ae
+  repository: acragenticbasedev001pq4u.azurecr.io/apps/redis
+  digest: sha256:5377d45871763dba0808dfa432c3c1519e9354cca98ec46470de793ebdef7b12
 nodeSelector:
   kubernetes.azure.com/agentpool: workload
   topology.credicorp.com/region: westus2
@@ -16,12 +16,12 @@ redis:
   port: 10000
   tls: true
   scope: https://redis.azure.com/.default
-  username: 650f1443-4290-4458-a858-5ebf7d37a0fe
+  username: 64fc089f-04b0-4dbb-beb3-dfeb0efa7bb5
 workloadIdentity:
-  clientId: 927df9d4-14a8-41d8-a754-5c2fe9159cae
-  principalId: 650f1443-4290-4458-a858-5ebf7d37a0fe
+  clientId: bb39747e-081a-4326-86d3-e035fc10259c
+  principalId: 64fc089f-04b0-4dbb-beb3-dfeb0efa7bb5
   tenantId: 00dc56d8-1058-405b-bc47-03af055246cb
-  issuer: https://westus2.oic.prod-aks.azure.com/00dc56d8-1058-405b-bc47-03af055246cb/2be205ba-688e-4e00-a659-f1f04c1ed121/
+  issuer: https://westus2.oic.prod-aks.azure.com/00dc56d8-1058-405b-bc47-03af055246cb/ca783ef9-e00e-49e5-84a7-69119bdf1f80/
   subject: system:serviceaccount:demo-services:demo-services
   audience: api://AzureADTokenExchange
 serviceAccount:
