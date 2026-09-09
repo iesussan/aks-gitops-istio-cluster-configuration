@@ -1,0 +1,15 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: aks-istio-ingressgateway-internal-asm-1-30
+  namespace: aks-istio-ingress
+  annotations:
+    kustomize.toolkit.fluxcd.io/ssa: Merge
+    kustomize.toolkit.fluxcd.io/prune: Disabled
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: aks-istio-ingressgateway-internal-asm-1-30
+  minReplicas: 3
+  maxReplicas: 10
