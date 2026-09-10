@@ -1,11 +1,11 @@
 apiVersion: networking.istio.io/v1
 kind: VirtualService
 metadata:
-  name: ux-client-apim
-  namespace: ux-client
+  name: ${UX_APIM_RESOURCE_NAME}
+  namespace: ${UX_APP_NAMESPACE}
 spec:
   hosts:
-  - private-apis.cloudcompany.pe
+  - ${UX_APIM_LOGICAL_HOST}
   gateways:
   - mesh
   exportTo:
@@ -14,41 +14,41 @@ spec:
   - name: safe-methods
     match:
     - method:
-        regex: ^(GET|HEAD|OPTIONS)$
-    timeout: 7s
+        regex: ${UX_SAFE_METHODS_REGEX}
+    timeout: ${UX_SAFE_TIMEOUT}
     retries:
-      attempts: 2
-      perTryTimeout: 2s
-      retryOn: gateway-error,500,connect-failure,refused-stream,reset
-      retryRemoteLocalities: true
-      retryIgnorePreviousHosts: true
-      backoff: 25ms
+      attempts: ${UX_SAFE_RETRY_ATTEMPTS}
+      perTryTimeout: ${UX_SAFE_PER_TRY_TIMEOUT}
+      retryOn: ${UX_SAFE_RETRY_ON}
+      retryRemoteLocalities: ${UX_SAFE_RETRY_REMOTE_LOCALITIES}
+      retryIgnorePreviousHosts: ${UX_SAFE_RETRY_IGNORE_PREVIOUS_HOSTS}
+      backoff: ${UX_SAFE_BACKOFF}
     route:
     - destination:
-        host: private-apis.cloudcompany.pe
+        host: ${UX_APIM_LOGICAL_HOST}
         port:
-          number: 80
+          number: ${UX_APIM_SERVICE_PORT}
       weight: 100
   - name: mutating-methods
     match:
     - method:
-        regex: ^(POST|PUT|PATCH|DELETE)$
-    timeout: 5s
+        regex: ${UX_MUTATING_METHODS_REGEX}
+    timeout: ${UX_MUTATING_TIMEOUT}
     retries:
-      attempts: 0
+      attempts: ${UX_MUTATING_RETRY_ATTEMPTS}
     route:
     - destination:
-        host: private-apis.cloudcompany.pe
+        host: ${UX_APIM_LOGICAL_HOST}
         port:
-          number: 80
+          number: ${UX_APIM_SERVICE_PORT}
       weight: 100
   - name: other-methods
-    timeout: 5s
+    timeout: ${UX_OTHER_TIMEOUT}
     retries:
-      attempts: 0
+      attempts: ${UX_OTHER_RETRY_ATTEMPTS}
     route:
     - destination:
-        host: private-apis.cloudcompany.pe
+        host: ${UX_APIM_LOGICAL_HOST}
         port:
-          number: 80
+          number: ${UX_APIM_SERVICE_PORT}
       weight: 100

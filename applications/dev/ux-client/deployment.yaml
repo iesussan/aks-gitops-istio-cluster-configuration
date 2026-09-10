@@ -1,35 +1,36 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ux-client
-  namespace: ux-client
+  name: ${UX_APP_NAME}
+  namespace: ${UX_APP_NAMESPACE}
 spec:
-  replicas: 2
+  replicas: ${UX_REPLICAS}
   selector:
     matchLabels:
-      app: ux-client
+      app: ${UX_APP_NAME}
   template:
     metadata:
       labels:
-        app: ux-client
-        sidecar.istio.io/inject: 'true'
+        app: ${UX_APP_NAME}
+        sidecar.istio.io/inject: "${UX_SIDECAR_INJECT}"
       annotations:
-        proxy.istio.io/config: 'holdApplicationUntilProxyStarts: true'
+        proxy.istio.io/config: "${UX_SIDECAR_PROXY_CONFIG}"
     spec:
-      serviceAccountName: ux-client
+      serviceAccountName: ${UX_SERVICE_ACCOUNT_NAME}
       containers:
-      - name: client
-        image: dummy:1.0.0
+      - name: ${UX_CONTAINER_NAME}
+        image: ${UX_IMAGE}
+        imagePullPolicy: ${UX_IMAGE_PULL_POLICY}
         envFrom:
         - configMapRef:
-            name: ux-client-settings
+            name: ${UX_CONFIG_MAP_NAME}
         resources:
           requests:
-            cpu: 50m
-            memory: 32Mi
+            cpu: "${UX_RESOURCES_REQUESTS_CPU}"
+            memory: "${UX_RESOURCES_REQUESTS_MEMORY}"
           limits:
-            cpu: 200m
-            memory: 128Mi
+            cpu: "${UX_RESOURCES_LIMITS_CPU}"
+            memory: "${UX_RESOURCES_LIMITS_MEMORY}"
         securityContext:
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: true
@@ -40,8 +41,8 @@ spec:
         - name: tmp
           mountPath: /tmp
         ports:
-        - name: http
-          containerPort: 8080
+        - name: ${UX_SERVICE_PORT_NAME}
+          containerPort: ${UX_CONTAINER_PORT}
       volumes:
       - name: tmp
         emptyDir: {}

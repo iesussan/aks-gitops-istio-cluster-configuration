@@ -1,0 +1,19 @@
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: ${UX_APP_NAME}-ingress
+  namespace: ${UX_APP_NAMESPACE}
+spec:
+  hosts:
+    - ${UX_INGRESS_HOST}
+  gateways:
+    - ${UX_INGRESS_NAMESPACE}/${UX_INGRESS_GATEWAY_NAME}
+  http:
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: ${UX_APP_NAME}.${UX_APP_NAMESPACE}.svc.cluster.local
+            port:
+              number: ${UX_SERVICE_PORT}

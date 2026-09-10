@@ -1,52 +1,52 @@
 apiVersion: networking.istio.io/v1
 kind: DestinationRule
 metadata:
-  name: ux-client-apim
-  namespace: ux-client
+  name: ${UX_APIM_RESOURCE_NAME}
+  namespace: ${UX_APP_NAMESPACE}
 spec:
-  host: private-apis.cloudcompany.pe
+  host: ${UX_APIM_LOGICAL_HOST}
   exportTo:
   - .
   trafficPolicy:
     loadBalancer:
-      simple: LEAST_REQUEST
+      simple: ${UX_LOAD_BALANCER_POLICY}
       localityLbSetting:
         enabled: true
         failover:
-        - from: westus2
-          to: westus3
-        - from: westus3
-          to: westus2
+        - from: ${UX_APIM_WESTUS2_LOCALITY}
+          to: ${UX_APIM_WESTUS3_LOCALITY}
+        - from: ${UX_APIM_WESTUS3_LOCALITY}
+          to: ${UX_APIM_WESTUS2_LOCALITY}
     connectionPool:
       tcp:
-        connectTimeout: 3s
-        maxConnections: 100
+        connectTimeout: ${UX_CONNECT_TIMEOUT}
+        maxConnections: ${UX_MAX_CONNECTIONS}
         tcpKeepalive:
-          probes: 3
-          time: 30s
-          interval: 10s
+          probes: ${UX_TCP_KEEPALIVE_PROBES}
+          time: ${UX_TCP_KEEPALIVE_TIME}
+          interval: ${UX_TCP_KEEPALIVE_INTERVAL}
       http:
-        http1MaxPendingRequests: 100
-        http2MaxRequests: 100
-        maxRequestsPerConnection: 0
-        maxRetries: 10
-        idleTimeout: 60s
-        h2UpgradePolicy: DO_NOT_UPGRADE
+        http1MaxPendingRequests: ${UX_HTTP1_MAX_PENDING_REQUESTS}
+        http2MaxRequests: ${UX_HTTP2_MAX_REQUESTS}
+        maxRequestsPerConnection: ${UX_MAX_REQUESTS_PER_CONNECTION}
+        maxRetries: ${UX_MAX_RETRIES}
+        idleTimeout: ${UX_IDLE_TIMEOUT}
+        h2UpgradePolicy: ${UX_H2_UPGRADE_POLICY}
     outlierDetection:
       splitExternalLocalOriginErrors: true
-      consecutiveLocalOriginFailures: 2
-      consecutiveGatewayErrors: 2
-      consecutive5xxErrors: 3
-      interval: 5s
-      baseEjectionTime: 30s
-      maxEjectionPercent: 100
-      minHealthPercent: 0
+      consecutiveLocalOriginFailures: ${UX_CONSECUTIVE_LOCAL_ORIGIN_FAILURES}
+      consecutiveGatewayErrors: ${UX_CONSECUTIVE_GATEWAY_ERRORS}
+      consecutive5xxErrors: ${UX_CONSECUTIVE_5XX_ERRORS}
+      interval: ${UX_OUTLIER_INTERVAL}
+      baseEjectionTime: ${UX_BASE_EJECTION_TIME}
+      maxEjectionPercent: ${UX_MAX_EJECTION_PERCENT}
+      minHealthPercent: ${UX_MIN_HEALTH_PERCENT}
     tls:
-      mode: SIMPLE
-      sni: private-apis.cloudcompany.pe
+      mode: ${UX_TLS_MODE}
+      sni: ${UX_APIM_LOGICAL_HOST}
       subjectAltNames:
-      - private-apis.cloudcompany.pe
-      insecureSkipVerify: false
+      - ${UX_APIM_LOGICAL_HOST}
+      insecureSkipVerify: ${UX_INSECURE_SKIP_VERIFY}
   workloadSelector:
     matchLabels:
-      app: ux-client
+      app: ${UX_APP_NAME}

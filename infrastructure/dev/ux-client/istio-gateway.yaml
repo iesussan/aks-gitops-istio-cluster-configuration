@@ -1,0 +1,17 @@
+apiVersion: networking.istio.io/v1
+kind: Gateway
+metadata:
+  name: ${UX_INGRESS_GATEWAY_NAME}
+  namespace: ${UX_INGRESS_NAMESPACE}
+  labels:
+    app: ${UX_INGRESS_LABEL_APP}
+spec:
+  selector:
+    istio: ${UX_INGRESS_SELECTOR}
+  servers:
+    - port:
+        number: ${UX_INGRESS_PORT}
+        name: ${UX_INGRESS_PORT_NAME}
+        protocol: ${UX_INGRESS_PROTOCOL}
+      hosts:
+        - ${UX_INGRESS_HOST}

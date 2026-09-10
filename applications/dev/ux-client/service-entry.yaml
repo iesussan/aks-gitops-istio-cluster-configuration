@@ -1,34 +1,34 @@
 apiVersion: networking.istio.io/v1
 kind: ServiceEntry
 metadata:
-  name: ux-client-apim
-  namespace: ux-client
+  name: ${UX_APIM_RESOURCE_NAME}
+  namespace: ${UX_APP_NAMESPACE}
 spec:
   hosts:
-  - private-apis.cloudcompany.pe
+    - ${UX_APIM_LOGICAL_HOST}
   exportTo:
   - .
   location: MESH_EXTERNAL
   resolution: DNS
   ports:
-  - number: 80
-    name: http-apim
-    protocol: HTTP
-    targetPort: 443
+    - number: ${UX_APIM_SERVICE_PORT}
+      name: ${UX_APIM_SERVICE_PORT_NAME}
+      protocol: ${UX_APIM_PROTOCOL}
+      targetPort: ${UX_APIM_TARGET_PORT}
   subjectAltNames:
-  - private-apis.cloudcompany.pe
+    - ${UX_APIM_LOGICAL_HOST}
   endpoints:
-  - address: replace-apim-westus2.invalid
-    locality: westus2
-    weight: 1
-    labels:
-      topology.kubernetes.io/region: westus2
-    ports:
-      http-apim: 443
-  - address: replace-apim-westus3.invalid
-    locality: westus3
-    weight: 1
-    labels:
-      topology.kubernetes.io/region: westus3
-    ports:
-      http-apim: 443
+    - address: ${UX_APIM_WESTUS2_ADDRESS}
+      locality: ${UX_APIM_WESTUS2_LOCALITY}
+      weight: ${UX_APIM_WESTUS2_WEIGHT}
+      labels:
+        topology.kubernetes.io/region: ${UX_APIM_WESTUS2_LOCALITY}
+      ports:
+        "${UX_APIM_SERVICE_PORT_NAME}": ${UX_APIM_TARGET_PORT}
+    - address: ${UX_APIM_WESTUS3_ADDRESS}
+      locality: ${UX_APIM_WESTUS3_LOCALITY}
+      weight: ${UX_APIM_WESTUS3_WEIGHT}
+      labels:
+        topology.kubernetes.io/region: ${UX_APIM_WESTUS3_LOCALITY}
+      ports:
+        "${UX_APIM_SERVICE_PORT_NAME}": ${UX_APIM_TARGET_PORT}

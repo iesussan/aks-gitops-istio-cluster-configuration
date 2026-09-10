@@ -1,8 +1,10 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: ux-client-settings
-  namespace: ux-client
+  name: ${UX_CONFIG_MAP_NAME}
+  namespace: ${UX_APP_NAMESPACE}
 data:
-  APIM_BASE_URL: http://private-apis.cloudcompany.pe
-  APIM_PATH: /REPLACE_SERVICE_PATH
+  SPRING_PROFILES_ACTIVE: "${UX_SPRING_PROFILE}"
+  BACKEND_EMPLOYEES_BASE_URL: "${UX_BACKEND_BASE_URL}"
+  BACKEND_EMPLOYEES_HEALTH_ENABLED: "${UX_BACKEND_HEALTH_ENABLED}"
+  BACKEND_EMPLOYEES_HEALTH_URL: "${UX_BACKEND_HEALTH_URL}"
