@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ux-client
+  namespace: ux-client
+spec:
+  type: ClusterIP
+  selector:
+    app: ux-client
+  ports:
+  - name: http
+    port: 80
+    targetPort: http

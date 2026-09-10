@@ -1,0 +1,52 @@
+apiVersion: networking.istio.io/v1
+kind: DestinationRule
+metadata:
+  name: ux-client-apim
+  namespace: ux-client
+spec:
+  host: private-apis.cloudcompany.pe
+  exportTo:
+  - .
+  trafficPolicy:
+    loadBalancer:
+      simple: LEAST_REQUEST
+      localityLbSetting:
+        enabled: true
+        failover:
+        - from: westus2
+          to: westus3
+        - from: westus3
+          to: westus2
+    connectionPool:
+      tcp:
+        connectTimeout: 3s
+        maxConnections: 100
+        tcpKeepalive:
+          probes: 3
+          time: 30s
+          interval: 10s
+      http:
+        http1MaxPendingRequests: 100
+        http2MaxRequests: 100
+        maxRequestsPerConnection: 0
+        maxRetries: 10
+        idleTimeout: 60s
+        h2UpgradePolicy: DO_NOT_UPGRADE
+    outlierDetection:
+      splitExternalLocalOriginErrors: true
+      consecutiveLocalOriginFailures: 2
+      consecutiveGatewayErrors: 2
+      consecutive5xxErrors: 3
+      interval: 5s
+      baseEjectionTime: 30s
+      maxEjectionPercent: 100
+      minHealthPercent: 0
+    tls:
+      mode: SIMPLE
+      sni: private-apis.cloudcompany.pe
+      subjectAltNames:
+      - private-apis.cloudcompany.pe
+      insecureSkipVerify: false
+  workloadSelector:
+    matchLabels:
+      app: ux-client

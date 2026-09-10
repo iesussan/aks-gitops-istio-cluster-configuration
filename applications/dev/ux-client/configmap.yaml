@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ux-client-settings
+  namespace: ux-client
+data:
+  APIM_BASE_URL: http://private-apis.cloudcompany.pe
+  APIM_PATH: /REPLACE_SERVICE_PATH

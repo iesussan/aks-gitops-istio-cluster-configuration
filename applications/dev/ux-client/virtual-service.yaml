@@ -1,0 +1,54 @@
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: ux-client-apim
+  namespace: ux-client
+spec:
+  hosts:
+  - private-apis.cloudcompany.pe
+  gateways:
+  - mesh
+  exportTo:
+  - .
+  http:
+  - name: safe-methods
+    match:
+    - method:
+        regex: ^(GET|HEAD|OPTIONS)$
+    timeout: 7s
+    retries:
+      attempts: 2
+      perTryTimeout: 2s
+      retryOn: gateway-error,500,connect-failure,refused-stream,reset
+      retryRemoteLocalities: true
+      retryIgnorePreviousHosts: true
+      backoff: 25ms
+    route:
+    - destination:
+        host: private-apis.cloudcompany.pe
+        port:
+          number: 80
+      weight: 100
+  - name: mutating-methods
+    match:
+    - method:
+        regex: ^(POST|PUT|PATCH|DELETE)$
+    timeout: 5s
+    retries:
+      attempts: 0
+    route:
+    - destination:
+        host: private-apis.cloudcompany.pe
+        port:
+          number: 80
+      weight: 100
+  - name: other-methods
+    timeout: 5s
+    retries:
+      attempts: 0
+    route:
+    - destination:
+        host: private-apis.cloudcompany.pe
+        port:
+          number: 80
+      weight: 100

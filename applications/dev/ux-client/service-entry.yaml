@@ -1,0 +1,34 @@
+apiVersion: networking.istio.io/v1
+kind: ServiceEntry
+metadata:
+  name: ux-client-apim
+  namespace: ux-client
+spec:
+  hosts:
+  - private-apis.cloudcompany.pe
+  exportTo:
+  - .
+  location: MESH_EXTERNAL
+  resolution: DNS
+  ports:
+  - number: 80
+    name: http-apim
+    protocol: HTTP
+    targetPort: 443
+  subjectAltNames:
+  - private-apis.cloudcompany.pe
+  endpoints:
+  - address: replace-apim-westus2.invalid
+    locality: westus2
+    weight: 1
+    labels:
+      topology.kubernetes.io/region: westus2
+    ports:
+      http-apim: 443
+  - address: replace-apim-westus3.invalid
+    locality: westus3
+    weight: 1
+    labels:
+      topology.kubernetes.io/region: westus3
+    ports:
+      http-apim: 443
