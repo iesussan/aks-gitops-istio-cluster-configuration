@@ -3,6 +3,8 @@ kind: DestinationRule
 metadata:
   name: ${UX_APIM_RESOURCE_NAME}
   namespace: ${UX_APP_NAMESPACE}
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
 spec:
   host: ${UX_APIM_LOGICAL_HOST}
   exportTo:
