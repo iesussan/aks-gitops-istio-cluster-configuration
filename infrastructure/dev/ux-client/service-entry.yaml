@@ -3,8 +3,6 @@ kind: ServiceEntry
 metadata:
   name: ${UX_APIM_RESOURCE_NAME}
   namespace: ${UX_APP_NAMESPACE}
-  annotations:
-    kustomize.toolkit.fluxcd.io/prune: disabled
   labels:
     networking.istio.io/enable-autoallocate-ip: "true"
 spec:
