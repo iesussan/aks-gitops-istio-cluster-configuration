@@ -4,8 +4,5 @@ resources:
 - service-account.yaml
 - configmap.yaml
 - deployment.yaml
-- service-entry.yaml
-- destination-rule.yaml
-- virtual-service.yaml
 - service.yaml
 - ingress-virtual-service.yaml

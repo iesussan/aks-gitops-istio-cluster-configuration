@@ -5,6 +5,8 @@ metadata:
   namespace: ${UX_APP_NAMESPACE}
   annotations:
     kustomize.toolkit.fluxcd.io/prune: disabled
+  labels:
+    networking.istio.io/enable-autoallocate-ip: "true"
 spec:
   hosts:
     - ${UX_APIM_LOGICAL_HOST}

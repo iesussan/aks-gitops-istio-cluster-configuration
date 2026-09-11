@@ -14,7 +14,10 @@ spec:
         app: ${UX_APP_NAME}
         sidecar.istio.io/inject: "${UX_SIDECAR_INJECT}"
       annotations:
-        proxy.istio.io/config: "${UX_SIDECAR_PROXY_CONFIG}"
+        proxy.istio.io/config: |-
+          holdApplicationUntilProxyStarts: true
+          proxyMetadata:
+            ISTIO_META_DNS_CAPTURE: "true"
     spec:
       serviceAccountName: ${UX_SERVICE_ACCOUNT_NAME}
       containers:
