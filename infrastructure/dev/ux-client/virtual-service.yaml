@@ -23,6 +23,10 @@ spec:
       retryRemoteLocalities: ${UX_SAFE_RETRY_REMOTE_LOCALITIES}
       retryIgnorePreviousHosts: ${UX_SAFE_RETRY_IGNORE_PREVIOUS_HOSTS}
       backoff: ${UX_SAFE_BACKOFF}
+    rewrite:
+      uriRegexRewrite:
+        match: "^/api/employees(.*)$"
+        rewrite: "/resiliency-app-redis/api/employees\\1"
     route:
     - destination:
         host: ${UX_APIM_LOGICAL_HOST}
@@ -36,6 +40,10 @@ spec:
     timeout: ${UX_MUTATING_TIMEOUT}
     retries:
       attempts: ${UX_MUTATING_RETRY_ATTEMPTS}
+    rewrite:
+      uriRegexRewrite:
+        match: "^/api/employees(.*)$"
+        rewrite: "/resiliency-app-redis/api/employees\\1"
     route:
     - destination:
         host: ${UX_APIM_LOGICAL_HOST}
@@ -46,6 +54,10 @@ spec:
     timeout: ${UX_OTHER_TIMEOUT}
     retries:
       attempts: ${UX_OTHER_RETRY_ATTEMPTS}
+    rewrite:
+      uriRegexRewrite:
+        match: "^/api/employees(.*)$"
+        rewrite: "/resiliency-app-redis/api/employees\\1"
     route:
     - destination:
         host: ${UX_APIM_LOGICAL_HOST}
