@@ -29,6 +29,9 @@ data:
     keda:
       enabled: false
     namespace: demo-services
+    nodeSelector:
+      kubernetes.azure.com/agentpool: workload
+      workload-type: null
     probes:
       liveness:
         failureThreshold: 5
