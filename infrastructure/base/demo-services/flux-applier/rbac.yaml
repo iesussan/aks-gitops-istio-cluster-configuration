@@ -7,7 +7,7 @@ metadata:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: flux-applier-redis
+  name: flux-applier-demo-service
   namespace: demo-services
 rules:
   - apiGroups:
@@ -56,12 +56,12 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: flux-applier-redis
+  name: flux-applier-demo-service
   namespace: demo-services
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: flux-applier-redis
+  name: flux-applier-demo-service
 subjects:
   - kind: ServiceAccount
     name: flux-applier
