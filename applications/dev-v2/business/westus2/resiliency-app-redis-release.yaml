@@ -14,6 +14,8 @@ spec:
     namespace: "demo-services"
   install:
     createNamespace: false
+    remediation:
+      retries: 3
   valuesFrom:
     - kind: ConfigMap
       name: "resiliency-app-redis-values"

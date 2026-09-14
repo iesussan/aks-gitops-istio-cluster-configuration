@@ -3,6 +3,8 @@ kind: ConfigMap
 metadata:
   name: "resiliency-app-redis-values"
   namespace: "demo-services"
+  labels:
+    reconcile.fluxcd.io/watch: Enabled
 data:
   values.yaml: |
     app:
