@@ -1,0 +1,58 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "resiliency-app-ux-redis-values"
+  namespace: "demo-services"
+data:
+  values.yaml: |
+    app:
+      businessUnit: employee-management
+      imageName: apps/resiliency-app-ux-redis
+      name: resiliency-app-ux-redis
+      profile: aks
+      shortName: ux-redis
+    clusterIssuer:
+      enabled: false
+    configMap:
+      data:
+        BACKEND_EMPLOYEES_BASE_URL: https://private-apis.cloudcompany.pe
+        BACKEND_EMPLOYEES_HEALTH_ENABLED: false
+        BACKEND_EMPLOYEES_HEALTH_URL: http://localhost:8080/actuator/health/liveness
+    global:
+      acrLoginServer: acrmrv2uxdevwus2001.azurecr.io
+      imagePullPolicy: IfNotPresent
+      imageTag: 0.1.4@sha256:b42388dc36c1182730c407419a9b97b24eb7fb703df610169d27d8daa64e1436
+    hpa:
+      enabled: false
+    ingress:
+      enabled: false
+    keda:
+      enabled: false
+    namespace: demo-services
+    probes:
+      liveness:
+        failureThreshold: 5
+        path: /actuator/health/liveness
+        periodSeconds: 10
+      readiness:
+        failureThreshold: 3
+        path: /actuator/health
+        periodSeconds: 5
+      startup:
+        failureThreshold: 12
+        initialDelaySeconds: 30
+        path: /actuator/health/liveness
+        periodSeconds: 5
+    replicas: 2
+    resources:
+      limits:
+        cpu: '1'
+        memory: 1Gi
+      requests:
+        cpu: 250m
+        memory: 512Mi
+    workloadIdentity:
+      clientId: ''
+      createServiceAccount: false
+      enabled: false
+      serviceAccountName: ''

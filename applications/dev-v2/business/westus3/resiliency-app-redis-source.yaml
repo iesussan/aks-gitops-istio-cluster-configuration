@@ -1,0 +1,14 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: "resiliency-app-redis-chart"
+  namespace: "demo-services"
+spec:
+  interval: 5m
+  provider: azure
+  url: "oci://acrmrv2businessdevwus3001.azurecr.io/helm/resiliency-app-redis"
+  ref:
+    digest: "sha256:0efcb5196ab7eedc1a8a99942ebdc715c229c9077bd724c536e87ffc270f795a"
+  layerSelector:
+    mediaType: "application/vnd.cncf.helm.chart.content.v1.tar+gzip"
+    operation: copy

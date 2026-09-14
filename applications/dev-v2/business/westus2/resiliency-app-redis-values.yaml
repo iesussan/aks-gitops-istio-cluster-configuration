@@ -1,0 +1,58 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "resiliency-app-redis-values"
+  namespace: "demo-services"
+data:
+  values.yaml: |
+    app:
+      businessUnit: employee-management
+      imageName: apps/resiliency-app-redis
+      name: resiliency-app-redis
+      profile: aks
+      shortName: redis
+    clusterIssuer:
+      enabled: false
+    configMap:
+      data:
+        REDIS_HOST: redis-mr-v2-dev-westus2-001.westus2.redis.azure.net
+        REDIS_PORT: 10000
+        REDIS_USERNAME: 1d5f9597-84d8-4b87-acbb-7391af198ec6
+    global:
+      acrLoginServer: acrmrv2businessdevwus2001.azurecr.io
+      imagePullPolicy: IfNotPresent
+      imageTag: 0.1.4@sha256:df3ee82920d61a876f65dcd667c3c92baaa66973662271cf80ae8f125e16272a
+    hpa:
+      enabled: false
+    ingress:
+      enabled: false
+    keda:
+      enabled: false
+    namespace: demo-services
+    probes:
+      liveness:
+        failureThreshold: 5
+        path: /actuator/health/liveness
+        periodSeconds: 10
+      readiness:
+        failureThreshold: 3
+        path: /actuator/health
+        periodSeconds: 5
+      startup:
+        failureThreshold: 12
+        initialDelaySeconds: 30
+        path: /actuator/health/liveness
+        periodSeconds: 5
+    replicas: 2
+    resources:
+      limits:
+        cpu: '1'
+        memory: 1Gi
+      requests:
+        cpu: 250m
+        memory: 512Mi
+    workloadIdentity:
+      clientId: fc96aa7d-8350-429c-8741-a0126dae95a2
+      createServiceAccount: true
+      enabled: true
+      serviceAccountName: demo-services

@@ -1,0 +1,149 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: "ux-to-business-api-trust"
+  namespace: "demo-services"
+type: Opaque
+data:
+  cacert: "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURMekNDQWhlZ0F3SUJBZ0lKQU1RNkE5RWdVSEgxTUEwR0NTcUdTSWIzRFFFQkN3VUFNQ2N4SlRBakJnTlYKQkFNTUhIQnlhWFpoZEdVdFlYQnBjeTVqYkc5MVpHTnZiWEJoYm5rdWNHVXdIaGNOTWpZd09URTBNVFV5TVRJNQpXaGNOTWpZeE1qRXpNVFV5TVRJNVdqQW5NU1V3SXdZRFZRUUREQnh3Y21sMllYUmxMV0Z3YVhNdVkyeHZkV1JqCmIyMXdZVzU1TG5CbE1JSUJJakFOQmdrcWhraUc5dzBCQVFFRkFBT0NBUThBTUlJQkNnS0NBUUVBcDFYYXNON3IKM0hlcjBMQ0Zkc2dxc2Q2NVlyMXozQnBvS24rSEtaYTNNS3ZBRDI5ajZmZEdBMUcyN0JUL1RoVVVqUFRHNC9OWAp5MXQyN3FZWlZhbnpianNocWV3UE56VUxCNGVBM3hsT1g5Q0E5dWE2dFV5SFc3M3FsM2p6MGZqNDFjQWhaYkx3CnJCL3BiMG0ySkRkcHZpL1RnWHJuQ3hSYmdNeEYrSGZCcXA4dm8rNTQrdmkvQ2RlQi9sTENZL01wY2tBM0NGMzgKMzdZOE5aS0FaTEFhdFJYaWMwRGZwVUpSREhrelNsUitlem9vZWRtem1heEJHdlVreVpnMTFrNFc0STZWTnI2aQpBMDV4RSs1UVF1RHBySHh2c1poaFBVU2U0ajBTRnJXQURLeklXOStyYzFZS0UreENTRnN1Mmhqd3RRKzlWVGI0ClZ2Uzk4eXhDM2Fsay9RSURBUUFCbzE0d1hEQW5CZ05WSFJFRUlEQWVnaHh3Y21sMllYUmxMV0Z3YVhNdVkyeHYKZFdSamIyMXdZVzU1TG5CbE1Bd0dBMVVkRXdFQi93UUNNQUF3RGdZRFZSMFBBUUgvQkFRREFnV2dNQk1HQTFVZApKUVFNTUFvR0NDc0dBUVVGQndNQk1BMEdDU3FHU0liM0RRRUJDd1VBQTRJQkFRQ1RXRTJlbVNyQ3FLOHV3cU5BCktXU1oxZEI5ZTlzRlVObjI3Sk1KUWw5QlJVRU1KdkJYYzlCYUZXYTl2WHlCL3BQMzdnR1RiM2lNSmFudGZqdHgKYUlUVGt3RTVMY3BEOTlHS0hhbTdxdHd5c3hmdnBRVmxqK3FmamhFVWplZGtlblh4SklsdDU0QkRycXNmMVVaQQpoNUdMU3FaUWl0RFBEbUtGVHRXY29ZcHRsV09GUXl5QjFVbitaSjYvR3kvOEpjRWVkM3hCMkY2aWY5eGw0WWMyCjdWeWNxNFNnVFZnQm9rZCtPNmNVbkxNajdEWUg4UlIvclFKaTRNS3Jqa3AzanpWNVNaclpWaXU3TGUzUDcydmEKTHBEMGEwUjNBMU5jRG50Q1NCb0NIdExSRVdnWjE4dUJzSis3bSttbW9ZOG1Ga2pwSWxlb0szUzlaUzJybjErZQp2bEl6Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K"
+---
+apiVersion: networking.istio.io/v1
+kind: ServiceEntry
+metadata:
+  name: "ux-to-business-api"
+  namespace: "demo-services"
+  labels:
+    networking.istio.io/enable-autoallocate-ip: "true"
+spec:
+  hosts:
+    - "private-apis.cloudcompany.pe"
+  exportTo: ["."]
+  location: MESH_EXTERNAL
+  resolution: DNS
+  ports:
+    - number: 443
+      name: https
+      protocol: TLS
+  subjectAltNames:
+    - "private-apis.cloudcompany.pe"
+  endpoints:
+    - address: "westus2.apim.internal.cloudcompany.pe"
+      locality: "westus2"
+      labels:
+        topology.kubernetes.io/region: "westus2"
+      ports:
+        https: 443
+    - address: "westus3.apim.internal.cloudcompany.pe"
+      locality: "westus3"
+      labels:
+        topology.kubernetes.io/region: "westus3"
+      ports:
+        https: 443
+---
+apiVersion: networking.istio.io/v1
+kind: DestinationRule
+metadata:
+  name: "ux-to-business-api"
+  namespace: "demo-services"
+spec:
+  host: "private-apis.cloudcompany.pe"
+  exportTo: ["."]
+  trafficPolicy:
+    loadBalancer:
+      simple: LEAST_REQUEST
+      localityLbSetting:
+        enabled: true
+        failover:
+          - from: "westus2"
+            to: "westus3"
+          - from: "westus3"
+            to: "westus2"
+    connectionPool:
+      tcp:
+        connectTimeout: 3s
+        maxConnections: 100
+      http:
+        http1MaxPendingRequests: 100
+        http2MaxRequests: 100
+        maxRequestsPerConnection: 100
+    outlierDetection:
+      splitExternalLocalOriginErrors: true
+      consecutiveLocalOriginFailures: 2
+      consecutiveGatewayErrors: 2
+      consecutive5xxErrors: 2
+      interval: 5s
+      baseEjectionTime: 30s
+      maxEjectionPercent: 100
+      minHealthPercent: 0
+    tls:
+      mode: SIMPLE
+      credentialName: "ux-to-business-api-trust"
+      sni: "private-apis.cloudcompany.pe"
+      subjectAltNames:
+        - "private-apis.cloudcompany.pe"
+  workloadSelector:
+    matchLabels:
+      app.kubernetes.io/part-of: "resiliency-app-ux-redis"
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: "ux-to-business-api"
+  namespace: "demo-services"
+spec:
+  hosts:
+    - "private-apis.cloudcompany.pe"
+  gateways: ["mesh"]
+  exportTo: ["."]
+  http:
+    - name: safe-methods
+      match:
+        - method:
+            regex: "^(?:GET|HEAD|OPTIONS)$"
+      timeout: "10s"
+      retries:
+        attempts: 2
+        perTryTimeout: "10s"
+        retryOn: connect-failure,reset,503
+        retryRemoteLocalities: true
+      rewrite:
+        uriRegexRewrite:
+          match: "^/api/employees(.*)$"
+          rewrite: "/resiliency-app-redis/api/employees\\1"
+      route:
+        - destination:
+            host: "private-apis.cloudcompany.pe"
+            port:
+              number: 443
+          weight: 100
+    - name: mutating-methods
+      match:
+        - method:
+            regex: "^(?:POST|PUT|PATCH|DELETE)$"
+      timeout: "10s"
+      retries:
+        attempts: 0
+      rewrite:
+        uriRegexRewrite:
+          match: "^/api/employees(.*)$"
+          rewrite: "/resiliency-app-redis/api/employees\\1"
+      route:
+        - destination:
+            host: "private-apis.cloudcompany.pe"
+            port:
+              number: 443
+          weight: 100
+    - name: other-methods
+      timeout: "10s"
+      retries:
+        attempts: 0
+      rewrite:
+        uriRegexRewrite:
+          match: "^/api/employees(.*)$"
+          rewrite: "/resiliency-app-redis/api/employees\\1"
+      route:
+        - destination:
+            host: "private-apis.cloudcompany.pe"
+            port:
+              number: 443
+          weight: 100
