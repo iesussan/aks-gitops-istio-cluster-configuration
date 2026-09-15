@@ -21,9 +21,10 @@ spec:
   location: MESH_EXTERNAL
   resolution: DNS
   ports:
-    - number: 443
-      name: https
-      protocol: TLS
+    - number: 80
+      name: http
+      protocol: HTTP
+      targetPort: 443
   subjectAltNames:
     - "private-apis.cloudcompany.pe"
   endpoints:
@@ -32,13 +33,13 @@ spec:
       labels:
         topology.kubernetes.io/region: "westus2"
       ports:
-        https: 443
+        http: 443
     - address: "westus3.apim.internal.cloudcompany.pe"
       locality: "westus3"
       labels:
         topology.kubernetes.io/region: "westus3"
       ports:
-        https: 443
+        http: 443
 ---
 apiVersion: networking.istio.io/v1
 kind: DestinationRule
@@ -114,7 +115,7 @@ spec:
         - destination:
             host: "private-apis.cloudcompany.pe"
             port:
-              number: 443
+              number: 80
           weight: 100
     - name: mutating-methods
       match:
@@ -131,7 +132,7 @@ spec:
         - destination:
             host: "private-apis.cloudcompany.pe"
             port:
-              number: 443
+              number: 80
           weight: 100
     - name: other-methods
       timeout: "10s"
@@ -145,5 +146,5 @@ spec:
         - destination:
             host: "private-apis.cloudcompany.pe"
             port:
-              number: 443
+              number: 80
           weight: 100

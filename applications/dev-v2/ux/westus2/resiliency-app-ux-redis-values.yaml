@@ -17,7 +17,7 @@ data:
       enabled: false
     configMap:
       data:
-        BACKEND_EMPLOYEES_BASE_URL: https://private-apis.cloudcompany.pe
+        BACKEND_EMPLOYEES_BASE_URL: http://private-apis.cloudcompany.pe
         BACKEND_EMPLOYEES_HEALTH_ENABLED: false
         BACKEND_EMPLOYEES_HEALTH_URL: http://localhost:8080/actuator/health/liveness
         SERVER_PORT: 8080
