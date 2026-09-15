@@ -20,6 +20,7 @@ data:
         BACKEND_EMPLOYEES_BASE_URL: http://private-apis.cloudcompany.pe
         BACKEND_EMPLOYEES_HEALTH_ENABLED: false
         BACKEND_EMPLOYEES_HEALTH_URL: http://localhost:8080/actuator/health/liveness
+        BACKEND_EMPLOYEES_TIMEOUT: 10s
         SERVER_PORT: 8080
     global:
       acrLoginServer: acrmrv2uxdevwus2001.azurecr.io
