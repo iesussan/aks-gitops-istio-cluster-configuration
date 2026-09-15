@@ -8,7 +8,7 @@ spec:
   provider: azure
   url: "oci://acrmrv2uxdevwus2001.azurecr.io/helm/resiliency-app-ux-redis"
   ref:
-    digest: "sha256:bb3bbd96d44545b071ca37aebc8968dce937b69ec871a2e602c5e26d36685840"
+    digest: "sha256:087c59e61cdcd52281d365985ff89e48814267aec149d8c8fdbea97bed20715e"
   layerSelector:
     mediaType: "application/vnd.cncf.helm.chart.content.v1.tar+gzip"
     operation: copy

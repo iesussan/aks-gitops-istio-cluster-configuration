@@ -25,7 +25,7 @@ data:
     global:
       acrLoginServer: acrmrv2uxdevwus2001.azurecr.io
       imagePullPolicy: IfNotPresent
-      imageTag: 0.1.4@sha256:b42388dc36c1182730c407419a9b97b24eb7fb703df610169d27d8daa64e1436
+      imageTag: 0.1.5@sha256:4b02ca5a1ca3673aef5b2d4aee2e4594864479a28b9fddc20d03b37208125b90
     hpa:
       enabled: false
     ingress:
