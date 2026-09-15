@@ -4,3 +4,11 @@ resources:
   - "business-api-ingress.yaml"
   - "business-api-v2-ingress.yaml"
   - "platform-access.yaml"
+patches:
+  - path: activity-63-business-v1-wus2-fault.yaml
+    target:
+      group: networking.istio.io
+      version: v1
+      kind: VirtualService
+      name: business-api-ingress-westus2
+      namespace: demo-services
