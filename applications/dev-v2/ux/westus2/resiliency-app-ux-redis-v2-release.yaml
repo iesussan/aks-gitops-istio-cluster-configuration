@@ -1,0 +1,37 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: "resiliency-app-ux-redis-v2"
+  namespace: "demo-services"
+spec:
+  interval: 5m
+  releaseName: "resiliency-app-ux-redis-v2"
+  targetNamespace: "demo-services"
+  serviceAccountName: flux-applier
+  chartRef:
+    kind: OCIRepository
+    name: "resiliency-app-ux-redis-v2-chart"
+    namespace: "demo-services"
+  install:
+    createNamespace: false
+    remediation:
+      retries: 3
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              group: apps
+              version: v1
+              kind: Deployment
+              name: "resiliency-app-ux-redis-v2-aks"
+            patch: |-
+              - op: add
+                path: /spec/template/metadata/labels/istio.io~1rev
+                value: "asm-1-30"
+              - op: add
+                path: /spec/template/metadata/annotations/proxy.istio.io~1config
+                value: '{"proxyMetadata":{"ISTIO_META_DNS_CAPTURE":"true","ISTIO_META_DNS_AUTO_ALLOCATE":"true"}}'
+  valuesFrom:
+    - kind: ConfigMap
+      name: "resiliency-app-ux-redis-v2-values"
+      valuesKey: values.yaml

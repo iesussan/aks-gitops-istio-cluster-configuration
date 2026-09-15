@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Secret
 metadata:
-  name: "ux-to-business-api-trust"
+  name: "ux-to-business-api-v2-trust"
   namespace: "demo-services"
 type: Opaque
 data:
@@ -10,13 +10,13 @@ data:
 apiVersion: networking.istio.io/v1
 kind: ServiceEntry
 metadata:
-  name: "ux-to-business-api"
+  name: "ux-to-business-api-v2"
   namespace: "demo-services"
   labels:
     networking.istio.io/enable-autoallocate-ip: "true"
 spec:
   hosts:
-    - "employees-v1.private-apis.cloudcompany.pe"
+    - "employees-v2.private-apis.cloudcompany.pe"
   exportTo: ["."]
   location: MESH_EXTERNAL
   resolution: DNS
@@ -44,10 +44,10 @@ spec:
 apiVersion: networking.istio.io/v1
 kind: DestinationRule
 metadata:
-  name: "ux-to-business-api"
+  name: "ux-to-business-api-v2"
   namespace: "demo-services"
 spec:
-  host: "employees-v1.private-apis.cloudcompany.pe"
+  host: "employees-v2.private-apis.cloudcompany.pe"
   exportTo: ["."]
   trafficPolicy:
     loadBalancer:
@@ -78,22 +78,22 @@ spec:
       minHealthPercent: 0
     tls:
       mode: SIMPLE
-      credentialName: "ux-to-business-api-trust"
+      credentialName: "ux-to-business-api-v2-trust"
       sni: "private-apis.cloudcompany.pe"
       subjectAltNames:
         - "private-apis.cloudcompany.pe"
   workloadSelector:
     matchLabels:
-      app.kubernetes.io/part-of: "resiliency-app-ux-redis"
+      app.kubernetes.io/part-of: "resiliency-app-ux-redis-v2"
 ---
 apiVersion: networking.istio.io/v1
 kind: VirtualService
 metadata:
-  name: "ux-to-business-api"
+  name: "ux-to-business-api-v2"
   namespace: "demo-services"
 spec:
   hosts:
-    - "employees-v1.private-apis.cloudcompany.pe"
+    - "employees-v2.private-apis.cloudcompany.pe"
   gateways: ["mesh"]
   exportTo: ["."]
   http:
@@ -114,10 +114,10 @@ spec:
       rewrite:
         uriRegexRewrite:
           match: "^/api/employees(.*)$"
-          rewrite: "/resiliency-app-redis/api/employees\\1"
+          rewrite: "/resiliency-app-redis-v2/api/employees\\1"
       route:
         - destination:
-            host: "employees-v1.private-apis.cloudcompany.pe"
+            host: "employees-v2.private-apis.cloudcompany.pe"
             port:
               number: 80
           weight: 100
@@ -135,10 +135,10 @@ spec:
       rewrite:
         uriRegexRewrite:
           match: "^/api/employees(.*)$"
-          rewrite: "/resiliency-app-redis/api/employees\\1"
+          rewrite: "/resiliency-app-redis-v2/api/employees\\1"
       route:
         - destination:
-            host: "employees-v1.private-apis.cloudcompany.pe"
+            host: "employees-v2.private-apis.cloudcompany.pe"
             port:
               number: 80
           weight: 100
@@ -153,10 +153,10 @@ spec:
       rewrite:
         uriRegexRewrite:
           match: "^/api/employees(.*)$"
-          rewrite: "/resiliency-app-redis/api/employees\\1"
+          rewrite: "/resiliency-app-redis-v2/api/employees\\1"
       route:
         - destination:
-            host: "employees-v1.private-apis.cloudcompany.pe"
+            host: "employees-v2.private-apis.cloudcompany.pe"
             port:
               number: 80
           weight: 100

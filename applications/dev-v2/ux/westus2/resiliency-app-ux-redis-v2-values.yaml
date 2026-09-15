@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: "resiliency-app-ux-redis-values"
+  name: "resiliency-app-ux-redis-v2-values"
   namespace: "demo-services"
   labels:
     reconcile.fluxcd.io/watch: Enabled
@@ -10,14 +10,14 @@ data:
     app:
       businessUnit: employee-management
       imageName: apps/resiliency-app-ux-redis
-      name: resiliency-app-ux-redis
+      name: resiliency-app-ux-redis-v2
       profile: aks
-      shortName: ux-redis
+      shortName: ux-redis-v2
     clusterIssuer:
       enabled: false
     configMap:
       data:
-        BACKEND_EMPLOYEES_BASE_URL: http://employees-v1.private-apis.cloudcompany.pe
+        BACKEND_EMPLOYEES_BASE_URL: http://employees-v2.private-apis.cloudcompany.pe
         BACKEND_EMPLOYEES_HEALTH_ENABLED: false
         BACKEND_EMPLOYEES_HEALTH_URL: http://localhost:8080/actuator/health/liveness
         BACKEND_EMPLOYEES_TIMEOUT: 10s

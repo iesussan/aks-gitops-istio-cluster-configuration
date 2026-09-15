@@ -3,4 +3,7 @@ kind: Kustomization
 resources:
   - "resiliency-app-redis-release.yaml"
   - "resiliency-app-redis-source.yaml"
+  - "resiliency-app-redis-v2-release.yaml"
+  - "resiliency-app-redis-v2-source.yaml"
+  - "resiliency-app-redis-v2-values.yaml"
   - "resiliency-app-redis-values.yaml"

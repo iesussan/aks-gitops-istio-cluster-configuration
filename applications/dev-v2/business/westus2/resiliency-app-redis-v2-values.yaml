@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: "resiliency-app-ux-redis-values"
+  name: "resiliency-app-redis-v2-values"
   namespace: "demo-services"
   labels:
     reconcile.fluxcd.io/watch: Enabled
@@ -9,23 +9,22 @@ data:
   values.yaml: |
     app:
       businessUnit: employee-management
-      imageName: apps/resiliency-app-ux-redis
-      name: resiliency-app-ux-redis
+      imageName: apps/resiliency-app-redis
+      name: resiliency-app-redis-v2
       profile: aks
-      shortName: ux-redis
+      shortName: redis-v2
     clusterIssuer:
       enabled: false
     configMap:
       data:
-        BACKEND_EMPLOYEES_BASE_URL: http://employees-v1.private-apis.cloudcompany.pe
-        BACKEND_EMPLOYEES_HEALTH_ENABLED: false
-        BACKEND_EMPLOYEES_HEALTH_URL: http://localhost:8080/actuator/health/liveness
-        BACKEND_EMPLOYEES_TIMEOUT: 10s
-        SERVER_PORT: 8080
+        LOGGING_LEVEL_ORG_MICROSOFT_DEMO_REDIS: INFO
+        REDIS_HOST: redis-mr-v2-dev-westus2-001.westus2.redis.azure.net
+        REDIS_PORT: 10000
+        REDIS_USERNAME: 1d5f9597-84d8-4b87-acbb-7391af198ec6
     global:
-      acrLoginServer: acrmrv2uxdevwus2001.azurecr.io
+      acrLoginServer: acrmrv2businessdevwus2001.azurecr.io
       imagePullPolicy: IfNotPresent
-      imageTag: 0.1.4@sha256:b42388dc36c1182730c407419a9b97b24eb7fb703df610169d27d8daa64e1436
+      imageTag: 0.1.4@sha256:df3ee82920d61a876f65dcd667c3c92baaa66973662271cf80ae8f125e16272a
     hpa:
       enabled: false
     ingress:
@@ -59,7 +58,7 @@ data:
         cpu: 250m
         memory: 512Mi
     workloadIdentity:
-      clientId: ''
+      clientId: fc96aa7d-8350-429c-8741-a0126dae95a2
       createServiceAccount: false
-      enabled: false
-      serviceAccountName: default
+      enabled: true
+      serviceAccountName: demo-services

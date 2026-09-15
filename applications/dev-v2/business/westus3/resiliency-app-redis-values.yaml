@@ -59,6 +59,6 @@ data:
         memory: 512Mi
     workloadIdentity:
       clientId: 3a677d12-88c7-40db-94e1-3a8643406f52
-      createServiceAccount: true
+      createServiceAccount: false
       enabled: true
       serviceAccountName: demo-services
