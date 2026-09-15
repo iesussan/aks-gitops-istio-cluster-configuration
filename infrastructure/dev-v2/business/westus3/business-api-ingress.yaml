@@ -38,3 +38,15 @@ spec:
             host: "resiliency-app-redis-aks.demo-services.svc.cluster.local"
             port:
               number: 80
+---
+apiVersion: security.istio.io/v1
+kind: PeerAuthentication
+metadata:
+  name: "resiliency-app-redis-strict-mtls"
+  namespace: "demo-services"
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/part-of: "resiliency-app-redis"
+  mtls:
+    mode: STRICT
