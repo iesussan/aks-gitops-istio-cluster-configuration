@@ -17,6 +17,7 @@ data:
       enabled: false
     configMap:
       data:
+        LOGGING_LEVEL_ORG_MICROSOFT_DEMO_REDIS: INFO
         REDIS_HOST: redis-mr-v2-dev-westus2-001.westus2.redis.azure.net
         REDIS_PORT: 10000
         REDIS_USERNAME: 1d5f9597-84d8-4b87-acbb-7391af198ec6
