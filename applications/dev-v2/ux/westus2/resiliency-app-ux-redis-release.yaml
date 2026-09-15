@@ -28,6 +28,9 @@ spec:
               - op: add
                 path: /spec/template/metadata/labels/istio.io~1rev
                 value: "asm-1-30"
+              - op: add
+                path: /spec/template/metadata/annotations/proxy.istio.io~1config
+                value: '{"proxyMetadata":{"ISTIO_META_DNS_CAPTURE":"true","ISTIO_META_DNS_AUTO_ALLOCATE":"true"}}'
   valuesFrom:
     - kind: ConfigMap
       name: "resiliency-app-ux-redis-values"
