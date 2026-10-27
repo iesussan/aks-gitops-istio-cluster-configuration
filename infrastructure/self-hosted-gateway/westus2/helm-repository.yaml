@@ -1,0 +1,8 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: azure-apim
+  namespace: apim-gateway
+spec:
+  interval: 1h
+  url: https://azure.github.io/api-management-self-hosted-gateway/helm-charts

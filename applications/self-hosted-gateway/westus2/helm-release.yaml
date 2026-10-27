@@ -1,0 +1,89 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: apim-shg
+  namespace: apim-gateway
+spec:
+  interval: 5m
+  releaseName: apim-shg
+  timeout: 10m
+  chart:
+    spec:
+      chart: azure-api-management-gateway
+      version: "1.17.0"
+      sourceRef:
+        kind: HelmRepository
+        name: azure-apim
+  values:
+    fullnameOverride: apim-shg
+    replicaCount: 1
+    image:
+      repository: mcr.microsoft.com/azure-api-management/gateway
+      tag: "2.13.0@sha256:ca9a4da31345afab2dad51ddf0e818dbde1cf78caa94b70c3c38aca46ec62b30"
+      pullPolicy: IfNotPresent
+    gateway:
+      name: "${SHG_GATEWAY_NAME}"
+      deployment:
+        strategy:
+          type: Recreate
+      auth:
+        type: WorkloadIdentity
+      configuration:
+        uri: "${SHG_CONFIGURATION_URL}"
+        backup:
+          enabled: true
+          persistentVolumeClaim:
+            create: true
+            storageClassName: managed-csi
+            accessMode: ReadWriteOnce
+            size: 1Gi
+        additional:
+          config.service.endpoint.disableCertificateValidation: "false"
+    serviceAccount:
+      create: false
+      name: apim-shg
+    secret:
+      createSecret: false
+    highAvailability:
+      enabled: false
+    nodeSelector:
+      kubernetes.azure.com/agentpool: workload
+    podSecurityContext:
+      fsGroup: 1001
+    resources:
+      requests:
+        cpu: "2"
+        memory: 2Gi
+    service:
+      type: LoadBalancer
+      annotations:
+        service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+        service.beta.kubernetes.io/azure-load-balancer-internal-subnet: snet-aks-workload
+      ports:
+        http: 80
+    observability:
+      azureMonitor:
+        metrics:
+          enabled: true
+      logs:
+        std:
+          format: json
+          level: info
+          useColor: false
+        local:
+          type: none
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              version: v1
+              kind: Service
+              name: apim-shg
+            patch: |-
+              - op: replace
+                path: /spec/ports
+                value:
+                  - name: http
+                    port: 80
+                    protocol: TCP
+                    targetPort: http
