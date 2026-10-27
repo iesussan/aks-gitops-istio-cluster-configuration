@@ -6,6 +6,7 @@ metadata:
 spec:
   interval: 5m
   releaseName: apim-shg
+  serviceAccountName: flux-applier
   timeout: 10m
   chart:
     spec:
