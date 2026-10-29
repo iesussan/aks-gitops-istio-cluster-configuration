@@ -61,9 +61,9 @@ data:
               - delete_key(attributes, "userAgent")
               - delete_key(attributes, "correlationId")
               - delete_key(attributes, "connectionId")
-      deltatocumulative: {}
+      delta_to_cumulative: {}
     connectors:
-      signaltometrics/shg-requests:
+      signal_to_metrics/shg-requests:
         error_mode: ignore
         logs:
           - name: shg.log.requests
@@ -135,10 +135,10 @@ data:
         logs/shg-requests:
           receivers: [udp_log/shg-requests]
           processors: [memory_limiter, filter/shg-requests, transform/shg-requests]
-          exporters: [signaltometrics/shg-requests]
+          exporters: [signal_to_metrics/shg-requests]
         metrics/shg-requests:
-          receivers: [signaltometrics/shg-requests]
-          processors: [deltatocumulative, memory_limiter, batch]
+          receivers: [signal_to_metrics/shg-requests]
+          processors: [delta_to_cumulative, memory_limiter, batch]
           exporters: [prometheus]
 ---
 apiVersion: apps/v1
@@ -159,7 +159,7 @@ spec:
       annotations:
         # The pod reads its config only at start; a test requires this to be the
         # SHA-256 of the ConfigMap so any config change also rolls the pod.
-        credicorp.com/config-sha256: "a37b8ac0397becef4e38d06cfe2e906f17602532ad0eb315eac9e6eb47cbe0a6"
+        credicorp.com/config-sha256: "af7d2ccd07ae5861b7da7cc1b1ce5e17d2808d9e87f702c854b594ee6a4f2d5e"
       labels:
         app.kubernetes.io/name: otel-collector
         app.kubernetes.io/part-of: self-hosted-gateway
