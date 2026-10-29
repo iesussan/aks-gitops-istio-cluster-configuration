@@ -51,27 +51,8 @@ data:
           - context: log
             statements:
               - set(attributes["url_path"], "unmapped")
-              - set(attributes["url_path"], "/mssql/api/customers") where attributes["apiId"] == "resiliency-app-mssql" and attributes["operationId"] == "createCustomer"
-              - set(attributes["url_path"], "/mssql/api/customers") where attributes["apiId"] == "resiliency-app-mssql" and attributes["operationId"] == "findAllCustomers"
-              - set(attributes["url_path"], "/mssql/api/customers/{id}") where attributes["apiId"] == "resiliency-app-mssql" and attributes["operationId"] == "findCustomerById"
-              - set(attributes["url_path"], "/mssql/api/customers/{id}") where attributes["apiId"] == "resiliency-app-mssql" and attributes["operationId"] == "updateCustomer"
-              - set(attributes["url_path"], "/mssql/api/customers/{id}") where attributes["apiId"] == "resiliency-app-mssql" and attributes["operationId"] == "deleteCustomer"
-              - set(attributes["url_path"], "/mssql/api/products") where attributes["apiId"] == "resiliency-app-mssql" and attributes["operationId"] == "createProduct"
-              - set(attributes["url_path"], "/mssql/api/products") where attributes["apiId"] == "resiliency-app-mssql" and attributes["operationId"] == "findAllProducts"
-              - set(attributes["url_path"], "/mssql/api/products/active") where attributes["apiId"] == "resiliency-app-mssql" and attributes["operationId"] == "findAllActiveProducts"
-              - set(attributes["url_path"], "/mssql/api/products/{id}") where attributes["apiId"] == "resiliency-app-mssql" and attributes["operationId"] == "findProductById"
-              - set(attributes["url_path"], "/mssql/api/products/{id}") where attributes["apiId"] == "resiliency-app-mssql" and attributes["operationId"] == "updateProduct"
-              - set(attributes["url_path"], "/mssql/api/products/{id}") where attributes["apiId"] == "resiliency-app-mssql" and attributes["operationId"] == "deleteProduct"
-              - set(attributes["url_path"], "/mssql/api/loan-applications") where attributes["apiId"] == "resiliency-app-mssql" and attributes["operationId"] == "createLoanApplication"
-              - set(attributes["url_path"], "/mssql/api/loan-applications") where attributes["apiId"] == "resiliency-app-mssql" and attributes["operationId"] == "findAllLoanApplications"
-              - set(attributes["url_path"], "/mssql/api/loan-applications/{id}") where attributes["apiId"] == "resiliency-app-mssql" and attributes["operationId"] == "findLoanApplicationById"
-              - set(attributes["url_path"], "/mssql/api/loan-applications/{id}/status") where attributes["apiId"] == "resiliency-app-mssql" and attributes["operationId"] == "updateLoanApplicationStatus"
-              - set(attributes["url_path"], "/pgsql/api/branches") where attributes["apiId"] == "resiliency-app-pgsql" and attributes["operationId"] == "createBranch"
-              - set(attributes["url_path"], "/pgsql/api/branches") where attributes["apiId"] == "resiliency-app-pgsql" and attributes["operationId"] == "findAllBranches"
-              - set(attributes["url_path"], "/pgsql/api/branches/{id}") where attributes["apiId"] == "resiliency-app-pgsql" and attributes["operationId"] == "findBranchById"
-              - set(attributes["url_path"], "/pgsql/api/branches/{id}") where attributes["apiId"] == "resiliency-app-pgsql" and attributes["operationId"] == "updateBranch"
-              - set(attributes["url_path"], "/pgsql/api/branches/{id}") where attributes["apiId"] == "resiliency-app-pgsql" and attributes["operationId"] == "deleteBranch"
-              - set(attributes["url_path"], "/shg-smoke/ping") where attributes["apiId"] == "shg-smoke" and attributes["operationId"] == "get-gateway"
+              - set(cache["routes"], ParseJSON(${SHG_URL_PATH_TEMPLATES}))
+              - set(attributes["url_path"], cache["routes"][Concat([attributes["apiId"], attributes["operationId"]], "/")]) where cache["routes"][Concat([attributes["apiId"], attributes["operationId"]], "/")] != nil
               - set(attributes["api_id"], ToLowerCase(attributes["apiId"]))
               - set(attributes["operation_id"], ToLowerCase(attributes["operationId"]))
               - set(attributes["response_code"], String(attributes["responseCode"]))
@@ -182,9 +163,12 @@ spec:
   template:
     metadata:
       annotations:
-        # The pod reads its config only at start; a test requires this to be the
-        # SHA-256 of the ConfigMap so any config change also rolls the pod.
-        credicorp.com/config-sha256: "95addea79fe8050b811d7068309bfbace156ff3d8ae7d9006f01669e3097c1ab"
+        # The pod reads its config only at start. A test requires this to be the
+        # SHA-256 of the ConfigMap as written in Git, so a config change rolls the pod.
+        credicorp.com/config-sha256: "f9a055ff2356d43cba76584b26392544defa58f71cad596269b13b3c368139e2"
+        # Terraform derives the route templates from the contracts; when they change,
+        # this value changes and rolls the pod.
+        credicorp.com/route-templates-sha256: "${SHG_URL_PATH_TEMPLATES_SHA256}"
       labels:
         app.kubernetes.io/name: otel-collector
         app.kubernetes.io/part-of: self-hosted-gateway
