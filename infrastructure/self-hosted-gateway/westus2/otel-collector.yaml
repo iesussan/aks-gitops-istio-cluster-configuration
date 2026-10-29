@@ -26,7 +26,7 @@ data:
         protocols:
           grpc:
             endpoint: 0.0.0.0:4317
-      udplog/shg-requests:
+      udp_log/shg-requests:
         listen_address: 0.0.0.0:8888
         one_log_per_packet: true
         operators:
@@ -50,11 +50,11 @@ data:
         log_statements:
           - context: log
             statements:
-              - set(attributes["api_id"], attributes["apiId"])
-              - set(attributes["operation_id"], attributes["operationId"])
+              - set(attributes["api_id"], ToLowerCase(attributes["apiId"]))
+              - set(attributes["operation_id"], ToLowerCase(attributes["operationId"]))
               - set(attributes["response_code"], String(attributes["responseCode"]))
               - set(attributes["backend_response_code"], String(attributes["backendResponseCode"])) where attributes["backendResponseCode"] != nil
-              - set(attributes["backend_host"], ExtractPatterns(attributes["backendUrl"], "^https?://(?P<host>[^/:?#]+)")["host"]) where attributes["backendUrl"] != nil
+              - set(attributes["backend_host"], ToLowerCase(ExtractPatterns(attributes["backendUrl"], "^https?://(?P<host>[^/:?#]+)")["host"])) where attributes["backendUrl"] != nil
               - delete_key(attributes, "url")
               - delete_key(attributes, "backendUrl")
               - delete_key(attributes, "callerIpAddress")
@@ -69,6 +69,8 @@ data:
           - name: shg.log.requests
             description: Gateway requests derived from SHG request logs.
             unit: "{request}"
+            conditions:
+              - attributes["responseCode"] != nil
             attributes:
               - key: api_id
               - key: operation_id
@@ -86,6 +88,7 @@ data:
             description: Total gateway time per request from SHG request logs.
             unit: ms
             conditions:
+              - attributes["responseCode"] != nil
               - attributes["totalTime"] != nil
             attributes:
               - key: api_id
@@ -98,6 +101,7 @@ data:
             description: Backend time per request from SHG request logs.
             unit: ms
             conditions:
+              - attributes["responseCode"] != nil
               - attributes["backendTime"] != nil
             attributes:
               - key: api_id
@@ -107,6 +111,17 @@ data:
             histogram:
               buckets: [5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000]
               value: Double(attributes["backendTime"])
+          - name: shg.log.incomplete.records
+            description: SHG request logs with an API but without a response code, excluded from the other metrics.
+            unit: "{record}"
+            conditions:
+              - attributes["responseCode"] == nil
+            attributes:
+              - key: api_id
+              - key: operation_id
+            sum:
+              value: "1"
+              monotonic: true
     exporters:
       prometheus:
         endpoint: 0.0.0.0:8889
@@ -118,7 +133,7 @@ data:
           processors: [memory_limiter, batch]
           exporters: [prometheus]
         logs/shg-requests:
-          receivers: [udplog/shg-requests]
+          receivers: [udp_log/shg-requests]
           processors: [memory_limiter, filter/shg-requests, transform/shg-requests]
           exporters: [signaltometrics/shg-requests]
         metrics/shg-requests:
