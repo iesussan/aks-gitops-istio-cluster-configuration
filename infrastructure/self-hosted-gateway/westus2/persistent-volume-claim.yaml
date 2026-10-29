@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: apim-shg
+  namespace: apim-gateway
+  labels:
+    app.kubernetes.io/name: apim-shg
+    app.kubernetes.io/part-of: self-hosted-gateway
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: managed-csi
+  resources:
+    requests:
+      storage: 1Gi

@@ -34,10 +34,8 @@ spec:
         backup:
           enabled: true
           persistentVolumeClaim:
-            create: true
-            storageClassName: managed-csi
-            accessMode: ReadWriteOnce
-            size: 1Gi
+            create: false
+            existingName: apim-shg
         additional:
           config.service.endpoint.disableCertificateValidation: "false"
     serviceAccount:

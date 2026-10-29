@@ -11,7 +11,7 @@ metadata:
   namespace: apim-gateway
 rules:
   - apiGroups: [""]
-    resources: ["secrets", "configmaps", "services", "persistentvolumeclaims"]
+    resources: ["secrets", "configmaps", "services"]
     verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
   - apiGroups: ["apps"]
     resources: ["deployments"]
