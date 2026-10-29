@@ -66,6 +66,10 @@ spec:
       azureMonitor:
         metrics:
           enabled: true
+      opentelemetry:
+        enabled: true
+        collector:
+          uri: http://otel-collector.apim-gateway.svc.cluster.local:4317
       logs:
         std:
           format: json

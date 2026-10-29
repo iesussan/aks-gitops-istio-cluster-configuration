@@ -6,3 +6,5 @@ resources:
   - service-account.yaml
   - flux-applier-rbac.yaml
   - helm-repository.yaml
+  - otel-collector.yaml
+  - pod-monitor.yaml
