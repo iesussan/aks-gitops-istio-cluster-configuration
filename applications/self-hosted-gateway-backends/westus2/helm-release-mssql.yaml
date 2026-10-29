@@ -1,0 +1,46 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: resiliency-app-mssql
+  namespace: demo-services
+spec:
+  interval: 5m
+  releaseName: resiliency-app-mssql
+  serviceAccountName: flux-applier
+  timeout: 10m
+  chartRef:
+    kind: OCIRepository
+    name: resiliency-app-mssql-chart
+    namespace: demo-services
+  install:
+    remediation:
+      retries: 3
+  values:
+    global:
+      acrLoginServer: "${ACR_LOGIN_SERVER}"
+      imagePullPolicy: IfNotPresent
+      imageTag: "1.0.0@sha256:d694f126e89718f927a56f6579551eaa9e3a1a787d39cb93b459510e047b9a3b"
+    app:
+      name: resiliency-app-mssql
+      shortName: mssql
+      profile: aks
+      businessUnit: loan-management
+    namespace: demo-services
+    replicas: 1
+    nodeSelector:
+      workload-type: null
+      kubernetes.azure.com/agentpool: workload
+    workloadIdentity:
+      enabled: true
+      serviceAccountName: mssql-workload-identity-sa
+      createServiceAccount: false
+    hpa:
+      enabled: false
+    ingress:
+      enabled: false
+    configMap:
+      data:
+        AZURE_CLIENT_ID: "${MSSQL_CLIENT_ID}"
+        DB_HOST: "${MSSQL_DB_HOST}"
+        DB_NAME: "${DATABASE_NAME}"
+        DB_PORT: "1433"

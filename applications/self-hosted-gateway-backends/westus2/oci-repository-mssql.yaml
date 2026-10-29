@@ -1,0 +1,14 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: resiliency-app-mssql-chart
+  namespace: demo-services
+spec:
+  interval: 5m
+  provider: azure
+  url: oci://${ACR_LOGIN_SERVER}/helm/resiliency-app-mssql
+  ref:
+    digest: "sha256:99065f645f729aef7e004c9e89d813b393e5fa89803de23d40f0063354205308"
+  layerSelector:
+    mediaType: "application/vnd.cncf.helm.chart.content.v1.tar+gzip"
+    operation: copy

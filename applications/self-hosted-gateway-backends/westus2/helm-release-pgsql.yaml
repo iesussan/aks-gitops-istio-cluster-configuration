@@ -1,0 +1,46 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: resiliency-app-pgsql
+  namespace: demo-services
+spec:
+  interval: 5m
+  releaseName: resiliency-app-pgsql
+  serviceAccountName: flux-applier
+  timeout: 10m
+  chartRef:
+    kind: OCIRepository
+    name: resiliency-app-pgsql-chart
+    namespace: demo-services
+  install:
+    remediation:
+      retries: 3
+  values:
+    global:
+      acrLoginServer: "${ACR_LOGIN_SERVER}"
+      imagePullPolicy: IfNotPresent
+      imageTag: "1.0.0@sha256:11312305d9df73e5a620636917d8c1d0af70c28a556a098e267ac28d870ad07d"
+    app:
+      name: resiliency-app-pgsql
+      shortName: pgsql
+      profile: aks
+      businessUnit: branch-management
+    namespace: demo-services
+    replicas: 1
+    nodeSelector:
+      workload-type: null
+      kubernetes.azure.com/agentpool: workload
+    workloadIdentity:
+      enabled: true
+      serviceAccountName: pgsql-workload-identity-sa
+      createServiceAccount: false
+    hpa:
+      enabled: false
+    ingress:
+      enabled: false
+    configMap:
+      data:
+        DB_HOST: "${PGSQL_DB_HOST}"
+        DB_NAME: "${DATABASE_NAME}"
+        DB_PORT: "5432"
+        DB_USERNAME: "${PGSQL_DB_USERNAME}"
