@@ -26,12 +26,87 @@ data:
         protocols:
           grpc:
             endpoint: 0.0.0.0:4317
+      udplog/shg-requests:
+        listen_address: 0.0.0.0:8888
+        one_log_per_packet: true
+        operators:
+          - type: json_parser
+            parse_from: body
+            parse_to: attributes
+            on_error: drop
     processors:
       memory_limiter:
         check_interval: 1s
         limit_mib: 400
         spike_limit_mib: 100
       batch: {}
+      filter/shg-requests:
+        error_mode: ignore
+        logs:
+          log_record:
+            - attributes["apiId"] == nil
+      transform/shg-requests:
+        error_mode: ignore
+        log_statements:
+          - context: log
+            statements:
+              - set(attributes["api_id"], attributes["apiId"])
+              - set(attributes["operation_id"], attributes["operationId"])
+              - set(attributes["response_code"], String(attributes["responseCode"]))
+              - set(attributes["backend_response_code"], String(attributes["backendResponseCode"])) where attributes["backendResponseCode"] != nil
+              - set(attributes["backend_host"], ExtractPatterns(attributes["backendUrl"], "^https?://(?P<host>[^/:?#]+)")["host"]) where attributes["backendUrl"] != nil
+              - delete_key(attributes, "url")
+              - delete_key(attributes, "backendUrl")
+              - delete_key(attributes, "callerIpAddress")
+              - delete_key(attributes, "userAgent")
+              - delete_key(attributes, "correlationId")
+              - delete_key(attributes, "connectionId")
+      deltatocumulative: {}
+    connectors:
+      signaltometrics/shg-requests:
+        error_mode: ignore
+        logs:
+          - name: shg.log.requests
+            description: Gateway requests derived from SHG request logs.
+            unit: "{request}"
+            attributes:
+              - key: api_id
+              - key: operation_id
+              - key: response_code
+              - key: method
+                optional: true
+              - key: backend_response_code
+                optional: true
+              - key: backend_host
+                optional: true
+            sum:
+              value: "1"
+              monotonic: true
+          - name: shg.log.request.duration
+            description: Total gateway time per request from SHG request logs.
+            unit: ms
+            conditions:
+              - attributes["totalTime"] != nil
+            attributes:
+              - key: api_id
+              - key: operation_id
+              - key: response_code
+            histogram:
+              buckets: [5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000]
+              value: Double(attributes["totalTime"])
+          - name: shg.log.backend.duration
+            description: Backend time per request from SHG request logs.
+            unit: ms
+            conditions:
+              - attributes["backendTime"] != nil
+            attributes:
+              - key: api_id
+              - key: operation_id
+              - key: backend_host
+                optional: true
+            histogram:
+              buckets: [5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000]
+              value: Double(attributes["backendTime"])
     exporters:
       prometheus:
         endpoint: 0.0.0.0:8889
@@ -41,6 +116,14 @@ data:
         metrics:
           receivers: [otlp]
           processors: [memory_limiter, batch]
+          exporters: [prometheus]
+        logs/shg-requests:
+          receivers: [udplog/shg-requests]
+          processors: [memory_limiter, filter/shg-requests, transform/shg-requests]
+          exporters: [signaltometrics/shg-requests]
+        metrics/shg-requests:
+          receivers: [signaltometrics/shg-requests]
+          processors: [deltatocumulative, memory_limiter, batch]
           exporters: [prometheus]
 ---
 apiVersion: apps/v1
@@ -85,6 +168,9 @@ spec:
             - name: prometheus
               containerPort: 8889
               protocol: TCP
+            - name: shg-logs
+              containerPort: 8888
+              protocol: UDP
             - name: health
               containerPort: 13133
               protocol: TCP
@@ -139,3 +225,7 @@ spec:
       port: 8889
       targetPort: prometheus
       protocol: TCP
+    - name: shg-logs
+      port: 8888
+      targetPort: shg-logs
+      protocol: UDP

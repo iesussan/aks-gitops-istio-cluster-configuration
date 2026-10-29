@@ -74,10 +74,29 @@ spec:
           level: info
           useColor: false
         local:
-          type: none
+          type: json
+          json:
+            endpoint: otel-collector.apim-gateway.svc.cluster.local:8888
   postRenderers:
     - kustomize:
         patches:
+          # The pod reads its ConfigMap only at start; bump the revision to roll it
+          # when telemetry settings change.
+          - target:
+              version: v1
+              group: apps
+              kind: Deployment
+              name: apim-shg
+            patch: |-
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: apim-shg
+              spec:
+                template:
+                  metadata:
+                    annotations:
+                      credicorp.com/telemetry-revision: "request-logs-1"
           - target:
               version: v1
               kind: Service
