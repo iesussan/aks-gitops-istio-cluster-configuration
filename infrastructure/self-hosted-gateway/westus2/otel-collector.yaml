@@ -156,6 +156,10 @@ spec:
       app.kubernetes.io/name: otel-collector
   template:
     metadata:
+      annotations:
+        # The pod reads its config only at start; a test requires this to be the
+        # SHA-256 of the ConfigMap so any config change also rolls the pod.
+        credicorp.com/config-sha256: "a37b8ac0397becef4e38d06cfe2e906f17602532ad0eb315eac9e6eb47cbe0a6"
       labels:
         app.kubernetes.io/name: otel-collector
         app.kubernetes.io/part-of: self-hosted-gateway
