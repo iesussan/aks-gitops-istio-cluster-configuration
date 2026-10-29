@@ -50,6 +50,28 @@ data:
         log_statements:
           - context: log
             statements:
+              - set(attributes["url_path"], "unmapped")
+              - set(attributes["url_path"], "/mssql/api/customers") where attributes["apiId"] == "resiliency-app-mssql" and attributes["operationId"] == "createCustomer"
+              - set(attributes["url_path"], "/mssql/api/customers") where attributes["apiId"] == "resiliency-app-mssql" and attributes["operationId"] == "findAllCustomers"
+              - set(attributes["url_path"], "/mssql/api/customers/{id}") where attributes["apiId"] == "resiliency-app-mssql" and attributes["operationId"] == "findCustomerById"
+              - set(attributes["url_path"], "/mssql/api/customers/{id}") where attributes["apiId"] == "resiliency-app-mssql" and attributes["operationId"] == "updateCustomer"
+              - set(attributes["url_path"], "/mssql/api/customers/{id}") where attributes["apiId"] == "resiliency-app-mssql" and attributes["operationId"] == "deleteCustomer"
+              - set(attributes["url_path"], "/mssql/api/products") where attributes["apiId"] == "resiliency-app-mssql" and attributes["operationId"] == "createProduct"
+              - set(attributes["url_path"], "/mssql/api/products") where attributes["apiId"] == "resiliency-app-mssql" and attributes["operationId"] == "findAllProducts"
+              - set(attributes["url_path"], "/mssql/api/products/active") where attributes["apiId"] == "resiliency-app-mssql" and attributes["operationId"] == "findAllActiveProducts"
+              - set(attributes["url_path"], "/mssql/api/products/{id}") where attributes["apiId"] == "resiliency-app-mssql" and attributes["operationId"] == "findProductById"
+              - set(attributes["url_path"], "/mssql/api/products/{id}") where attributes["apiId"] == "resiliency-app-mssql" and attributes["operationId"] == "updateProduct"
+              - set(attributes["url_path"], "/mssql/api/products/{id}") where attributes["apiId"] == "resiliency-app-mssql" and attributes["operationId"] == "deleteProduct"
+              - set(attributes["url_path"], "/mssql/api/loan-applications") where attributes["apiId"] == "resiliency-app-mssql" and attributes["operationId"] == "createLoanApplication"
+              - set(attributes["url_path"], "/mssql/api/loan-applications") where attributes["apiId"] == "resiliency-app-mssql" and attributes["operationId"] == "findAllLoanApplications"
+              - set(attributes["url_path"], "/mssql/api/loan-applications/{id}") where attributes["apiId"] == "resiliency-app-mssql" and attributes["operationId"] == "findLoanApplicationById"
+              - set(attributes["url_path"], "/mssql/api/loan-applications/{id}/status") where attributes["apiId"] == "resiliency-app-mssql" and attributes["operationId"] == "updateLoanApplicationStatus"
+              - set(attributes["url_path"], "/pgsql/api/branches") where attributes["apiId"] == "resiliency-app-pgsql" and attributes["operationId"] == "createBranch"
+              - set(attributes["url_path"], "/pgsql/api/branches") where attributes["apiId"] == "resiliency-app-pgsql" and attributes["operationId"] == "findAllBranches"
+              - set(attributes["url_path"], "/pgsql/api/branches/{id}") where attributes["apiId"] == "resiliency-app-pgsql" and attributes["operationId"] == "findBranchById"
+              - set(attributes["url_path"], "/pgsql/api/branches/{id}") where attributes["apiId"] == "resiliency-app-pgsql" and attributes["operationId"] == "updateBranch"
+              - set(attributes["url_path"], "/pgsql/api/branches/{id}") where attributes["apiId"] == "resiliency-app-pgsql" and attributes["operationId"] == "deleteBranch"
+              - set(attributes["url_path"], "/shg-smoke/ping") where attributes["apiId"] == "shg-smoke" and attributes["operationId"] == "get-gateway"
               - set(attributes["api_id"], ToLowerCase(attributes["apiId"]))
               - set(attributes["operation_id"], ToLowerCase(attributes["operationId"]))
               - set(attributes["response_code"], String(attributes["responseCode"]))
@@ -74,6 +96,7 @@ data:
             attributes:
               - key: api_id
               - key: operation_id
+              - key: url_path
               - key: response_code
               - key: method
                 optional: true
@@ -93,6 +116,7 @@ data:
             attributes:
               - key: api_id
               - key: operation_id
+              - key: url_path
               - key: response_code
             histogram:
               buckets: [5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000]
@@ -106,6 +130,7 @@ data:
             attributes:
               - key: api_id
               - key: operation_id
+              - key: url_path
               - key: backend_host
                 optional: true
             histogram:
@@ -159,7 +184,7 @@ spec:
       annotations:
         # The pod reads its config only at start; a test requires this to be the
         # SHA-256 of the ConfigMap so any config change also rolls the pod.
-        credicorp.com/config-sha256: "af7d2ccd07ae5861b7da7cc1b1ce5e17d2808d9e87f702c854b594ee6a4f2d5e"
+        credicorp.com/config-sha256: "95addea79fe8050b811d7068309bfbace156ff3d8ae7d9006f01669e3097c1ab"
       labels:
         app.kubernetes.io/name: otel-collector
         app.kubernetes.io/part-of: self-hosted-gateway
